@@ -2,7 +2,7 @@
 
 GChandler = Garmin Connect (GG) + handler
 
-It makes programmatically login into GC and then handles it: reveals user info, get a list of activities, downoad the activity, etc. If a GC endpoint with infornation contained  is known, a new item can be added.
+If you are a GC user, with `gchandler` you can programmatically login into GC with your username an password and then handle it. That is, you can see  your userinfo, reveals your  list of activities, downoads the activity, etc. If it is known a GC endpoint with infornation contained,  a new item can be added into the index page.
 
 ## Motivation
 
