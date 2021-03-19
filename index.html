@@ -1,75 +1,38 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<style>
-		table {
-			border-spacing: 0;
-			width: 100%;
-			border: 1px solid #ddd;
-			cursor: default;
-			table-layout: fixed;
-		}
-
-		thead * {
-			cursor: pointer;
-			user-select: none;
-		}
-
-		thead .sorted[data-order="-1"]::after {
-			content: "▼"
-		}
-
-		thead .sorted[data-order="1"]::after {
-			content: "▲"
-		}
-
-		th,
-		td {
-			text-align: left;
-			padding: 16px;
-		}
-
-		tbody tr:nth-child(odd) {
-			background-color: #f2f2f2
-		}
-	</style>
-
-	<script src=./utilities/tableHeaders.js></script>
-	<script src=./src/main.js></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./src/index.css" />
+  <style> </style>
 </head>
-
-
 
 <body>
 
-	<label for="fileauto">Predefined:</label>
-	<select name="fileauto" id="fileauto" style = "text-align:right;"> 
-		<option value="./myactivities/table.csv" selected>myactivities</option>
-		<option value="./../../python/activities/summary2016-20xx.csv">2016-20xx</option>
-		<option value="./../../python/activities/summary2011-2016.csv">2011-2016</option>
-	</select>
-	&nbsp
-	<label for="file">Αctivities file:</label>
-	<input id="file" type="text" value="./myactivities/table.csv"/> 
-	<input id="openFile" type="button" value='Open'/> 
-    <!-- &nbsp Level up = ./../ &nbsp &nbsp root=/fitalyser -->
-	<!-- <label for="read_table">Load activities table:</label> -->
-	<!-- <input id="read_table" type="file" value='' accept=".csv"  style="padding: 0px; size: 200px" />  -->
-	<!-- <label for="read_table">Path to activities folder:</label> -->
-	<!-- <input id="activities_path" type="text" value='./' style="padding: 0px; size: 120px" />  -->
-	<!-- <input type="number" id="levelup"  min="0" value="0" style="width: 40px;"> -->
-	<!-- <label for="levelup">levels up, root=fitalyser </label>  -->		
-	&nbsp	
-	<label for="downloadURL">Activity:</label>
-	<input id="downloadURL" type="text" value="https://connect.garmin.com/modern/activity/xxxxxxxxxx" style="width:333px"/> 
-	<select name="downloadpop" id="downloadPop" style = "text-align:right;"> 
-		<option value="downloadSingle">single</option>
-		<option value="downloadSeries">series</option>
-	</select>
-	<input id="download" type="button" value='Download'/> 
-	&nbsp
+  <h2>Garmin Connect Login</h2>
+  <label for="username" id="labelUsername"><b>Username:</b></label>
+  <input type="text"  name="username" id="username" autocomplete="username" required style="width:200px">
+   <br>
+  <label for="password" id="labelPassword"><b>Password:</b></label>
+  <input type="password" placeholder="Enter Password" name="password" id="password" autocomplete="current-password"
+    required style="width:200px">
+
+  <input type="text" id="loginStatus" value="not logged" style="width:150px; display:none">
+  <br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+  <button id="Login" style="width:180px;">Login</button>
+
+  <br />
+  <button id="userinfo" style="width:auto; display:none">User info</button>
+  <br>
+  <label for="start_index" id="start_indexLabel" style="display:none">Start:</label>
+	<input id="start_index" type="number" value=0 min="0" max="10000" step="1" style="width:50px; display:none"/> 
+	<label for="max_limit" id="max_limitLabel" style="display:none">Limit:</label>
+	<input id="max_limit" type="number" value=20 min="20" max="1000" step="20" style="width:50px; display:none"/> 
+  <br>
+  <button id="activitiesList" style="width:auto; display:none">Activities list</button>
+  
+  <script src=./src/main.js></script>
 
 </body>
 

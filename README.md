@@ -2,7 +2,7 @@
 
 GChandler = Garmin Connect (GG) + handler
 
-If you are a GC user, with `gchandler` you can programmatically login into GC with your username an password and then handle it. That is, you can see  your userinfo, reveals your  list of activities, downoads the activity, etc. If it is known a GC endpoint with infornation contained,  a new item can be added into the index page.
+If you are a GC user, with `gchandler` you can programmatically login into GC with your username an password and then handle it. That is, you can see  your userinfo, reveals your  list of activities, downoads the activity, etc. If it is known a GC endpoint with infornation contained, a new item can be added into the index page.
 
 ## Motivation
 
@@ -30,6 +30,10 @@ Read [CHANGELOG.md](https://github.com/karaul/gchandler/blob/master/CHANGELOG.md
 ## How it works
 
 `gchandler` needs a static http-server
+
+## Acknowledgments
+
+GC login follows the logics of  [garmin-uploader](https://github.com/La0/garmin-uploader/blob/master/garmin_uploader/api.py) written by Bastien Abadie;
 
 ## License
 
