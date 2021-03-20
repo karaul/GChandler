@@ -1,5 +1,5 @@
 credentials.json
-srs/.*
+srs/.jsconfig
 activities/*
 utils/*
 tools/
