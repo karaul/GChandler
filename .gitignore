@@ -1,5 +1,5 @@
 credentials.json
-srs/.gc-config
+srs/.gc-config.js
 activities/*
 utils/*
 tools/
