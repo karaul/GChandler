@@ -9,6 +9,7 @@ const portscanner = require('portscanner');
 
 // Garmin Connect
 const gc = require('./src/gc.js');
+let gc_config = gc.config;
 
 /*let config = {};
 try {
@@ -66,7 +67,7 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
   const parseParams = function (s) {
     s.split("&").forEach(e => {
       let d = e.split("=");
-      params[`${d[0]}`] = `${d[1]}`
+      params[`${d[0]}`] = decodeURIComponent(`${d[1]}`);
     })
   };
 
@@ -82,7 +83,7 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
       req.on('end', () => {
         //let params = JSON.parse(data);
         //console.log(params);
-        data = data.replace("%40", "@");
+        //data = (data);
         console.log("data: " + data);
         params = {};
         parseParams(data.slice(data.indexOf("?") + 1));
@@ -126,17 +127,13 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
     if (foo.length > 0) {
       console.log(" foo: " + foo);
       if (foo === "status") {
-        const r = {
+        let r = {
           loginFlag: loginFlag,
-          loginCounter: loginCounter
         };
+        if (loginFlag) r.config = gc_config;
         console.log(r);
-        //if (loginFlag) {
-          let t = JSON.stringify(r);
-          res.end(t);
-        //} else {
-        //  console.log(" ... process login ...")
-        //}
+        let t = JSON.stringify(r);
+        res.end(t);
       }
       if (loginFlag) {
         switch (foo) {
@@ -167,9 +164,13 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
             //let downloadDir = "./";
             // activitiesList mus be resolved
             //let activity = activitiesList[0];
+            //console.log(params.downloadDir);
             gc.downloadActivity(params.downloadDir, params.fileName, params.id)
               .then(r => {
-                console.log(r + " is downloaded")
+                //console.log(r + " is downloaded")
+                console.log(r);
+                let t = JSON.stringify( { file: r } );
+                res.end(t);
               });
             break;
         }

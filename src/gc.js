@@ -11,6 +11,15 @@ const util = require('util');
 const pipeline = util.promisify(stream.pipeline);
 
 const admzip = require('adm-zip');
+
+let config;
+try {
+  const m = require("./.gc-config.js");
+  config = m.config;
+} catch (error) {
+  config = { dowloadDir: "./"};
+}
+
 // https://stackoverflow.com/questions/63291156/download-zip-with-axios-and-unzip-with-adm-zip-in-memory-electron-app
 
 // https://github.com/La0/garmin-uploader/blob/master/garmin_uploader/api.py
@@ -176,6 +185,9 @@ module.exports = {
             .catch( r=> { return {displayName: "undedefined"} } )
         return userinfo;
     },
+
+    // config contains doawnloadDir and etc
+    config: config,
 
     login: async function (username, password, verbose) {
 
@@ -363,6 +375,7 @@ module.exports = {
         //const time = new Date(activity.startTimeLocal).toISOString();
         //let fileName = time.replace(/:/g, "_") + "_" + id + ".fit";
         const url = URL_ACTIVITY_BODY(id);
+        let result;
         await axios.get(url, //, params: params
                 {
                     headers: headers,
@@ -371,15 +384,21 @@ module.exports = {
             .then(r => {
                 const zipfile = new admzip(r.data);
                 const filenameOrig = zipfile.getEntries()[0].name;
-                zipfile.extractAllTo(downloadDir, true);
-                fs.rename(downloadDir + "/" + filenameOrig, downloadDir + "/" + fileName, function (err) {
-                    if (err) console.log('ERROR at renaming: ' + fileName + err);
-                })
-                console.log(fileName + ": OK")
+                if( fileName.slice(-4) === ".fit" ) {
+                    zipfile.extractAllTo(downloadDir, true);
+                    fs.rename(downloadDir + "/" + filenameOrig, downloadDir + "/" + fileName, function (err) {
+                        if (err) console.log('ERROR at renaming: ' + fileName + err);
+                    })
+                    console.log(fileName + ": OK")
+                    result = fileName;
+                } else{
+                    // does not work as arraybuffer
+                    //result = readAsText(zipfile.getEntry(filenameOrig));
+                }
             })
             .catch(r => {
-                console.log("Error: " + fileName + " is not downloaded")
+                console.log("Error downloadActivity: " + fileName )
             })
-        return fileName
+        return result
     }
 }

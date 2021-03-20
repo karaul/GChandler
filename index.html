@@ -4,12 +4,17 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="./src/index.css" />
+
+  <!-- <script>var module = {};</script> -->
+  <!-- <script src=./src/config.js></script> -->
+  <!-- <script src=./LevelUp/fitplotter/src/fit-parser.js></script> -->
+
   <style> </style>
 </head>
 
 <body>
 
-  <h2>Garmin Connect Login</h2>
+  <h2 id="gcTitle">Garmin Connect Login</h2>
   <label for="username" id="labelUsername"><b>Username:</b></label>
   <input type="text"  name="username" id="username" autocomplete="username" required style="width:200px">
    <br>
@@ -18,19 +23,31 @@
     required style="width:200px">
 
   <input type="text" id="loginStatus" value="not logged" style="width:150px; display:none">
+  <button id="userinfo" style="width:auto; display:none">Show user info</button>
   <br>
   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
   <button id="Login" style="width:180px;">Login</button>
 
-  <br />
-  <button id="userinfo" style="width:auto; display:none">User info</button>
   <br>
   <label for="start_index" id="start_indexLabel" style="display:none">Start:</label>
 	<input id="start_index" type="number" value=0 min="0" max="10000" step="1" style="width:50px; display:none"/> 
 	<label for="max_limit" id="max_limitLabel" style="display:none">Limit:</label>
 	<input id="max_limit" type="number" value=20 min="20" max="1000" step="20" style="width:50px; display:none"/> 
-  <br>
+  <!-- <br> -->
   <button id="activitiesList" style="width:auto; display:none">Activities list</button>
+  <br>
+  <br>
+  <label for="downloadDir" id="downloadDirLabel" style="display:none" >Download folder:</label>
+	<input id="downloadDir" type="text" value=".\temp\"  style="width:200px; display:none"/> 
+  <br>
+	<label for="activityId" id="activityIdLabel" style="display:none">Activity Id:</label>
+	<input id="activityId" type="number" value=0 style="width:110px; display:none"/> 
+  <button id="getLatestId" style="width:auto; display:none">File name/latest Id</button>
+  <br>
+	<label for="activityFileName" id="activityFileNameLabel" style="display:none">File name:</label>
+  <br>
+	<input id="activityFileName" type="text" value="xxx_activity.fit" style="width:320px; display:none"/> 
+  <button id="downloadActivity" style="width:auto; display:none">Download file</button>
   
   <script src=./src/main.js></script>
 

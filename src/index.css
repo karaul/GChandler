@@ -6,7 +6,7 @@ body {
   input[type=text],
   input[type=password] {
     width: 100%;
-    padding: 12px 20px;
+    padding: 8px 20px;
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
@@ -15,9 +15,9 @@ body {
 
   /* Set a style for all buttons */
   button {
-    background-color: #2db82d;
+    background-color: #058b32;
     color: white;
-    padding: 14px 20px;
+    padding: 10px 20px;
     margin: 8px 0;
     border: none;
     cursor: pointer;
