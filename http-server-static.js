@@ -9,7 +9,22 @@ const portscanner = require('portscanner');
 
 // Garmin Connect
 const gc = require('./src/gc.js');
-let gc_config = gc.config;
+
+let gc_config  = {};
+try {
+  gc_config = JSON.parse(fs.readFileSync('./src/config.json', 'utf8'));
+} catch {
+  gc_config = { downloadDir:  "./../fitalyser/myactivities/"};
+}
+try {
+  gc_config.maxLocalActivityId = parseInt( 
+    fs.readFileSync(gc_config.downloadDir + "/maxLocalActivityId", 'utf8')
+  );
+} catch {
+  gc_config.maxLocalActivityId = 0;
+}
+
+
 
 /*let config = {};
 try {
@@ -148,6 +163,19 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
       }
       if (loginFlag) {
         switch (foo) {
+          case "maxLocalActivityId":
+            let r = {text: "maxLocalActivityId is updated"};
+            fs.writeFileSync(
+              gc_config.downloadDir + "/maxLocalActivityId", 
+              params.maxLocalActivityId, function(err) {
+                if(error) {
+                  console.log("Error by writing: " + gc_config.downloadDir + "/maxLocalActivityId");
+                  r.text = "Error at updating maxLocalActivityId. File is blocked ?"
+                }
+            });
+            let t = JSON.stringify(r);
+            res.end(t);
+          break;
           case "userinfo":
             if (debug) {
               userinfo = gc.userinfoTest();
@@ -180,7 +208,7 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
               .then(r => {
                 //console.log(r + " is downloaded")
                 console.log(r);
-                let t = JSON.stringify( { file: r } );
+                let t = JSON.stringify( { text: r } );
                 res.end(t);
               });
             break;

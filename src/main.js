@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     var config;
+    var activitiesList = {};
 
     window.onclick = function (event) {
         var m = document.getElementById('modal');
@@ -78,37 +79,51 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    document.getElementById("downloadActivity").onclick = function (e) {
+    document.getElementById("downloadNewActivities").onclick = function (e) {
         if (document.getElementById("loginStatus").value === "logged") {
+            const maxOnlineId = document.getElementById('maxOnlineActivityId').value || 0;
+            const maxLocalId = document.getElementById('maxLocalActivityId').value;
+            if ( maxOnlineId == 0 ){
+                alert("Click button:\n Get max online Id")
+                return null;
+            }
+            if ( maxOnlineId <= maxLocalId ) {
+                alert("All activities are downloaded")
+                return null;
+            }
+            async function downloadNewActivitues() {
             params.foo = "downloadActivity";
             params.downloadDir = document.getElementById("downloadDir").value 
-            params.fileName = document.getElementById("activityFileName").value;
-            params.id = document.getElementById("activityId").value;
-            //makeXMLHttpRequest(params,"arraybuffer");
-            makeXMLHttpRequest(params);
+            activitiesList.forEach(a => {
+                const id = a.activityId;
+                if (id > maxLocalId) {
+                    const time = new Date(a.startTimeLocal).toISOString();
+                    params.fileName = time.replace(/:/g, "_").replace(".000Z","+00_00") + "_" + id + ".fit";
+                    params.id = id;
+                    makeXMLHttpRequest(params);
+                }                
+            }); 
+            }
+            downloadNewActivitues().then( r=> {
+                params.foo = "maxLocalActivityId";
+                params.maxLocalActivityId = maxOnlineId;
+                makeXMLHttpRequest(params);
+                //return "OK"
+            }).catch( r=> {
+                //return "Something wrong"
+            })
+            //addParagraph(t);
         } else {
             pending();
         }
     }
 
-    /*function toArrayBuffer(buf) {
-        var ab = new ArrayBuffer(buf.length);
-        var view = new Uint8Array(ab);
-        for (var i = 0; i < buf.length; ++i) {
-            view[i] = buf[i];
-        }
-        return ab;
-    }*/
-
     function httpRequestOnLoad() {
         if (this.readyState === 4 && this.status === 200) {
             //console.log(this)
             switch (params.foo) {
-                case "config":
-                    config = this.response;
-                    console.log("now config:")
-                    console.log(config)
-                    //config = {downloadDir: "./"};
+                case "maxLocalActivityId":
+                    addParagraph( this.response.text );
                 break;
                 case "login":
                     params.foo = "status";
@@ -139,48 +154,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     break;
                 case "activitiesList":
                     if (document.getElementById("loginStatus").value === "logged") {
-                        var activitiesList = this.response;
+                        activitiesList = this.response;
+                        document.getElementById("maxOnlineActivityId").value = activitiesList[0].activityId;
                         //console.log(activitiesList);
-                        var i = 0;
-                        for (var k = 0; k < activitiesList.length; k++) {
-                            if (activitiesList[k].activityId == document.getElementById("activityId").value) {
-                                console.log(activitiesList[k].activityId + ":" + document.getElementById("activityId").value)
-                                i = k;
-                                break
-                            }
-                        }
-                        const activity = activitiesList[i];
-                        const id = activity.activityId;
-                        const time = new Date(activity.startTimeLocal).toISOString();
-                        let fileName = time.replace(/:/g, "_").replace(".000Z","+00_00") + "_" + id + ".fit";
-                        document.getElementById("activityId").value = id;
-                        document.getElementById("activityFileName").value = fileName;
                     }
                     break;
                 case "downloadActivity":
                     //let content = toArrayBuffer(this.response);
-                    console.log(this.response);
+                    //console.log(this.response);
                     addParagraph( "Downloaded: " 
-                        +  document.getElementById('downloadDir').value + "/" + this.response.file);
-                    /*
-                    const fitParser = new FitParser({
-                        force: true,
-                        speedUnit: 'km/h',
-                        lengthUnit: 'km',
-                        temperatureUnit: 'celcius',
-                        elapsedRecordField: true,
-                        mode: 'list',                
-                      });
-                      
-                      fitParser.parse(content, function (error, data) {
-                        if (error) {
-                          console.log(error);
-                          console.log("\nCheck path to FIT file\n");
-                        } else {
-                          console.log(data);
-                        }
-                      });
-                    */                    
+                        +  document.getElementById('downloadDir').value + "/" + this.response.text);
                     break;
                 default:
                     break;
@@ -216,15 +199,21 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('start_indexLabel').style.display = "inline";
         document.getElementById('max_limitLabel').style.display = "inline";
         document.getElementById('activitiesList').style.display = "inline";
-        document.getElementById('downloadDir').style.display = "inline";
         document.getElementById('downloadDir').value = config.downloadDir;
+        document.getElementById('downloadDir').style.display = "inline";
         document.getElementById('downloadDirLabel').style.display = "inline";
+        //document.getElementById('maxActivityIdΤitle').style.display = "inline";
+        document.getElementById('maxLocalActivityId').value = config.maxLocalActivityId;
+        document.getElementById('maxLocalActivityId').style.display = "inline";
+        document.getElementById('maxLocalActivityIdLabel').style.display = "inline";                
         document.getElementById('getLatestId').style.display = "inline";
-        document.getElementById('activityId').style.display = "inline";
-        document.getElementById('activityFileNameLabel').style.display = "inline";
-        document.getElementById('activityFileName').style.display = "inline";
-        document.getElementById('activityIdLabel').style.display = "inline";
-        document.getElementById('downloadActivity').style.display = "inline";
+        document.getElementById('maxOnlineActivityId').value = 0;
+        document.getElementById('maxOnlineActivityId').style.display = "inline";
+        document.getElementById('maxOnlineActivityIdLabel').style.display = "inline";
+        document.getElementById('downloadNewActivities').style.display = "inline";
+        //document.getElementById('activityFileNameLabel').style.display = "inline";
+        //document.getElementById('activityFileName').style.display = "inline";
+        //document.getElementById('activityIdLabel').style.display = "inline";
     }
 
     function formatParams(params) {
