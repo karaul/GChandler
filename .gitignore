@@ -1,3 +1,4 @@
+.gitignore
 credentials.json
 srs/.gc-config.js
 activities/*
