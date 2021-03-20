@@ -116,8 +116,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     break;
                 case "status":
                     if (this.response.loginFlag) {
-                        config = this.response.config;
-                        showGarminConnectControls();
+                        if ("config" in this.response) {
+                            config = this.response.config;                        
+                            showGarminConnectControls();
+                        } else {
+                            let errorInfo = "Error at login:\n" + this.response.error 
+                                +   "\nCheck username and password";
+                            if ( this.response.error === "No host") errorInfo += "\nRestart http-server-static"
+                            alert( errorInfo );
+                            document.location.reload();
+                        }
                     } else {
                         loginCounter++;
                         if (loginCounter == 1) {

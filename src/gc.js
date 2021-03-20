@@ -173,8 +173,18 @@ module.exports = {
         }
         //var loginStatus=  await stall(500); // stalls for 500 ms = 0.5 sec
         var loginStatus=  await stall() // stalls for 3000 ms deault
-            .then( r=> { return {login: "OK"} } )
-            .catch( r=> { return {login: "NO"} } )
+            .then( r=> { 
+                let s={};
+                if (username === "goodUser") {
+                    s.login = "OK";
+                } else {
+                    s.login = "NO"
+                    s.error = "not good User"
+                }
+                return s; 
+            }) //{ return {login: "OK"} } )
+            .catch( r=> { return {login: "NO", error: "catch error"} })
+        
         return loginStatus;
     },
 
@@ -191,6 +201,8 @@ module.exports = {
 
     login: async function (username, password, verbose) {
 
+        let loginStatus = {login: "NO"};
+
         var verbose = verbose || false;
         var data = {
             'embed': 'false',
@@ -206,8 +218,13 @@ module.exports = {
                 return r.data.host;
             })
             .catch((r) => {
-                throw Error("No host")
+                loginStatus.error = "No host";
+                return null;
+                //throw Error("No host")
             })
+
+        if ("error" in loginStatus) return loginStatus;
+
         params['webhost'] = webhost;
         if (verbose) console.log("host: " + webhost);
 
@@ -222,8 +239,14 @@ module.exports = {
                 return csrf_token;
             })
             .catch((r) => {
-                throw Error("No csrf_token")
+                loginStatus.error = "No csrf_token";
+                return null;
+                //throw Error("No csrf_token")
             })
+        // if (!csrf_token) return loginStatus;
+
+        if ("error" in loginStatus) return loginStatus;
+
         data['_csrf'] = csrf_token;
         if (verbose) console.log("csrf_token: " + csrf_token);
 
@@ -247,9 +270,14 @@ module.exports = {
                 return ticket;
             })
             .catch((r) => {
-                throw Error("Post error, no ticket");
+                loginStatus.error = "Post error, no ticket";
+                return null;
+                //throw Error("Post error, no ticket");
             });
 
+        //if (!ticket) return loginStatus;
+
+        if ("error" in loginStatus) return loginStatus;
 
         if (verbose) {
             console.log(ticket);
@@ -260,9 +288,9 @@ module.exports = {
         headers = {};
         headers['Host'] = URL_HOST_CONNECT;
 
-        // auxaliry function to get final cookies
+        let status = null;
+        // auxialiry function to get final cookies
         async function getcookies() {
-            let status;
             let location = URL_POST_LOGIN + ticket;
             for (let k = 0; k < 8; k++) {
                 console.log("k=" + k);
@@ -279,22 +307,30 @@ module.exports = {
                 })
                 if (status == 200) break;
             }
-            return status;
+            if (!(status == 200)) loginStatus.error = "No proper redirection";
         }
 
+        if ("error" in loginStatus) return loginStatus;
+
         // get final cookies
-        await getcookies().then(status => {
+        let cookies = await getcookies().then(status => {
                 if (verbose) {
                     console.log("getcookies status: " + status);
                     console.log("Final cookies");
                     console.log(headers.Cookie);
                 }
+                return headers.Cookie;
             })
             .catch(() => {
-                throw Error("No coockies")
+                loginStatus.error = "No final cookies";
+                return null;
+                //throw Error("No coockies")
             })
+        //if (!cookies) return loginStatus;
+        
+        if ("error" in loginStatus) return loginStatus;
 
-        let loginStatus = {login: "OK"};
+        loginStatus.login = "OK";
         return loginStatus;
     },
 

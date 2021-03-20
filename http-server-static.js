@@ -22,13 +22,14 @@ const
   password = config.password; 
 */
 
-const debug = false;
+const debug = false; // true or false
 const verboseLogin = true;
 
 let
   loginFlag = false,
+  loginInfo = {},
   loginCounter = 0;
-userinfo = {},
+  userinfo = {},
   activitiesList = [];
 
 
@@ -105,6 +106,7 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
               //console.log("resolve loginTest");
               console.log(r);
               loginFlag = true;
+              loginInfo = r;
               //let t = JSON.stringify(r);
               //res.end(t); 
             })
@@ -130,7 +132,16 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
         let r = {
           loginFlag: loginFlag,
         };
-        if (loginFlag) r.config = gc_config;
+        if (loginFlag) {
+          if (loginInfo.login === "OK") {
+            r.config = gc_config;
+          } else {
+            r.error = loginInfo.error;
+            loginFlag = false;
+            loginInfo = {};
+            loginCounter = 0;
+          }
+        } 
         console.log(r);
         let t = JSON.stringify(r);
         res.end(t);
