@@ -28,24 +28,29 @@
   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
   <button id="Login" style="width:180px;">Login</button>
   <br>
-  <!-- <p id="maxActivityIdΤitle" style="display:none"> <b></b></p> -->
-	<label for="maxLocalActivityId" id="maxLocalActivityIdLabel" style="display:none">Maximal local activity Id:</label>
-	<input id="maxLocalActivityId" type="number" value=0 style="width:90px; display:none"/> 
+  <label for="start_index" id="start_indexLabel" style="display:none">Activity Id &nbsp<i>start_index</i>:</label>
+	<input id="start_index" type="number" value=0 min="0" max="10000" step="1" style="width:40px; display:none"/> 
+	<label for="max_limit" id="max_limitLabel" style="display:none">&nbsp<i>max_limit:</i></label>
+	<input id="max_limit" type="number" value=20 min="20" max="1000" step="20" style="width:40px; display:none"/> 
   <br>
-  <label for="maxOnlineActivityId" id="maxOnlineActivityIdLabel" style="display:none">Maximal online activity Id:</label>
+  <button id="getLatestId" style="width:auto; display:none; width: 350px">Get GarminConnect Id's for <i>start_index, max_limit</i></button> 
+  <!-- <p id="maxActivityIdΤitle" style="display:none"> <b></b></p> -->
+  <br>
+  <label for="maxOnlineActivityId" id="maxOnlineActivityIdLabel" style="display:none"><i>start_index</i> GarminConnect  Id:</label>
 	<input id="maxOnlineActivityId" type="number" value=0 style="width:90px; display:none"/> 
   <br>
-  <label for="downloadDir" id="downloadDirLabel" style="display:none" >Download folder:</label>
-	<input id="downloadDir" type="text" value=".\temp\"  style="width:200px; display:none"/> 
+  <label for="minOnlineActivityId" id="minOnlineActivityIdLabel" style="display:none">&nbsp&nbsp<i>max_limit</i> GarminConnect  Id:</label>
+	<input id="minOnlineActivityId" type="number" value=0 style="width:90px; display:none"/> 
   <br>
-  <button id="getLatestId" style="width:auto; display:none">Get max online Id</button> 
-  <button id="downloadNewActivities" style="width:auto; display:none" >Download new activities</button>
+	<label for="maxLocalActivityId" id="maxLocalActivityIdLabel" style="display:none">Latest downloaded activity Id :</i></label>
+	<input id="maxLocalActivityId" type="number" value=0 style="width:90px; display:none"/> 
   <br>
-  <label for="start_index" id="start_indexLabel" style="display:none">Start:</label>
-	<input id="start_index" type="number" value=0 min="0" max="10000" step="1" style="width:35px; display:none"/> 
-	<label for="max_limit" id="max_limitLabel" style="display:none">Limit:</label>
-	<input id="max_limit" type="number" value=20 min="20" max="1000" step="20" style="width:35px; display:none"/> 
-  <button id="activitiesList" style="width:auto; display:none">Show activities list</button>
+  <label for="downloadDir" id="downloadDirLabel" style="display:none" ><i>Download folder:</i></label>
+	<input id="downloadDir" type="text" value=".\temp\"  style="width:220px; display:none"/> 
+  <br>
+  
+  <button id="activitiesList" style="width:auto; display:none">Show activities in <i>fitalyser</i></button>
+  <button id="downloadNewActivities" style="width:auto; display:none" >Download activities</button>
  
 	<!-- <label for="activityFileName" id="activityFileNameLabel" style="display:none">File name:</label> -->
 	<!-- <input id="activityFileName" type="text" value="xxx_activity.fit" style="width:320px; display:none"/>  -->

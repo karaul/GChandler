@@ -15,6 +15,10 @@ try {
   gc_config = JSON.parse(fs.readFileSync('./src/config.json', 'utf8'));
 } catch {
   gc_config = { downloadDir:  "./../fitalyser/myactivities/"};
+  fs.writeFileSync(
+    './src/config.json', JSON.stringify(gc_config), function(err) {
+      if(err) {console.log("Error by writing gc_config")}
+  });
 }
 try {
   gc_config.maxLocalActivityId = parseInt( 
@@ -167,7 +171,7 @@ portscanner.findAPortNotInUse(3000, 3999, '127.0.0.1', function (error, port) {
             let r = {text: "maxLocalActivityId is updated"};
             fs.writeFileSync(
               gc_config.downloadDir + "/maxLocalActivityId", 
-              params.maxLocalActivityId, function(err) {
+              params.maxLocalActivityId, function(error) {
                 if(error) {
                   console.log("Error by writing: " + gc_config.downloadDir + "/maxLocalActivityId");
                   r.text = "Error at updating maxLocalActivityId. File is blocked ?"

@@ -73,46 +73,61 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("getLatestId").onclick = function (e) {
         if (document.getElementById("loginStatus").value === "logged") {
             params.foo = "activitiesList";
-            params.start_index = 0;
-            params.max_limit = 20;
+            params.start_index = document.getElementById('start_index').value;
+            params.max_limit = document.getElementById('max_limit').value;
             makeXMLHttpRequest(params);
         } else {
             pending();
         }
     }
 
-    async function getActivity(a, maxLocalId) {
-        const id = a.activityId;
-        if (id > maxLocalId) {
-            const time = new Date(a.startTimeLocal).toISOString();
-            params.fileName = time.replace(/:/g, "_").replace(".000Z", "+00_00") + "_" + id + ".fit";
-            params.id = id;
-            makeXMLHttpRequest(params);
-        }
-    }
 
     document.getElementById("downloadNewActivities").onclick = function (e) {
         if (document.getElementById("loginStatus").value === "logged") {
             const maxOnlineId = document.getElementById('maxOnlineActivityId').value || 0;
             const maxLocalId = document.getElementById('maxLocalActivityId').value;
             if (maxOnlineId == 0) {
-                alert("Click button:\n Get max online Id")
+                alert("Click GREEN BUTTON signed:\n" + 
+                    "Get GarminConnect Id's for start_index, max_limit")
                 return null;
             }
             if (maxOnlineId <= maxLocalId) {
-                alert("All activities are downloaded")
+                alert("All activities are downloaded, local_max_Id >= start_index_Id, where\n" + 
+                    "local_max_Id = the Latest downloaded activity Id\n" +
+                    "start_index_Id = the given  GarminConnect start_index\n\n" +
+                    "To download ALL the activities, please set:\n" + 
+                    "start_index = 0, max_limit = 999999, local_max_Id = 0\n" +
+                    "WARNING: it takes time")
                 return null;
             }
 
             params.foo = "downloadActivity";
             params.downloadDir = document.getElementById("downloadDir").value
+            async function getActivity(a) {
+                const id = a.activityId;
+                if (id > maxLocalId) {
+                    const time = new Date(a.startTimeLocal).toISOString();
+                    params.fileName = time.replace(/:/g, "_").replace(".000Z", "+00_00") + "_" + id + ".fit";
+                    params.id = id;
+                    makeXMLHttpRequest(params,"json",false);
+                    return "downloaded";
+                }
+                return "existed";
+            }        
             async function downloadNewActivitues() {
-            for (const a of activitiesList) {
-                await getActivity(a, maxLocalId).then( r=> {})
-            }}
-            downloadNewActivitues().then( r => {
+                let report = {downloaded: 0, existed: 0};
+                for (const a of activitiesList) {
+                    await getActivity(a).then( r=>{report[r]++} )
+                }
+                return report;
+            }
+            downloadNewActivitues().then( report => {
                 params.foo = "maxLocalActivityId";
                 params.maxLocalActivityId = maxOnlineId;
+                for ( let [key, value] of Object.entries(report) ) {
+                    const s = key + ":" + value.toString();
+                    addParagraph(s);
+                }
                 makeXMLHttpRequest(params);
                 document.getElementById('maxLocalActivityId').value = maxOnlineId;
             })
@@ -158,15 +173,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 case "activitiesList":
                     if (document.getElementById("loginStatus").value === "logged") {
                         activitiesList = this.response;
+                        console.log(activitiesList.slice(-1));
                         document.getElementById("maxOnlineActivityId").value = activitiesList[0].activityId;
+                        document.getElementById("minOnlineActivityId").value = activitiesList.slice(-1)[0].activityId;
                         //console.log(activitiesList);
                     }
                     break;
                 case "downloadActivity":
                     //let content = toArrayBuffer(this.response);
                     //console.log(this.response);
-                    addParagraph("Downloaded: " +
-                        document.getElementById('downloadDir').value + "/" + this.response.text);
+                    addParagraph("downloaded: " +
+                        document.getElementById('downloadDir').value + "/" + params.fileName + " Ok");
                     break;
                 default:
                     break;
@@ -213,6 +230,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('maxOnlineActivityId').value = 0;
         document.getElementById('maxOnlineActivityId').style.display = "inline";
         document.getElementById('maxOnlineActivityIdLabel').style.display = "inline";
+        document.getElementById('minOnlineActivityId').value = 0;
+        document.getElementById('minOnlineActivityId').style.display = "inline";
+        document.getElementById('minOnlineActivityIdLabel').style.display = "inline";
         document.getElementById('downloadNewActivities').style.display = "inline";
         //document.getElementById('activityFileNameLabel').style.display = "inline";
         //document.getElementById('activityFileName').style.display = "inline";
@@ -238,19 +258,19 @@ document.addEventListener('DOMContentLoaded', function () {
         "id": "1234567890"
     };
 
-    function makeXMLHttpRequest(params, type = "json") {
+    function makeXMLHttpRequest(params, type = "json", asyncmode = true) {
         let xhr = new XMLHttpRequest();
         xhr.onload = httpRequestOnLoad;
         //xhr.onreadystatechange = httpRequestOnLoad;        
-        xhr.open('GET', url + formatParams(params), true);
+        xhr.open('GET', url + formatParams(params), asyncmode);
         if (type === "json") {
             xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-            xhr.responseType = 'json';
+            if (asyncmode) xhr.responseType = 'json';
         }
         if (type === "arraybuffer") {
             //console.log(type);
             xhr.setRequestHeader('Content-type', 'application/octet-stream');
-            xhr.responseType = 'arraybuffer';
+            if (asyncmode) xhr.responseType = 'arraybuffer';
         }
         xhr.onerror = function (e) {
             console.log(error(xhr.statusText));
