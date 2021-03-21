@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById("Login").onclick = function (e) {
         if (loginCounter == 0) {
-            setTimeout( makeXMLHttpRequest( {foo:"status"}), 3000);
+            setTimeout(makeXMLHttpRequest({
+                foo: "status"
+            }), 3000);
         } else {
             var data = {
                 "foo": "login", //activitiesList", // "userinfo",
@@ -79,40 +81,41 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    async function getActivity(a, maxLocalId) {
+        const id = a.activityId;
+        if (id > maxLocalId) {
+            const time = new Date(a.startTimeLocal).toISOString();
+            params.fileName = time.replace(/:/g, "_").replace(".000Z", "+00_00") + "_" + id + ".fit";
+            params.id = id;
+            makeXMLHttpRequest(params);
+        }
+    }
+
     document.getElementById("downloadNewActivities").onclick = function (e) {
         if (document.getElementById("loginStatus").value === "logged") {
             const maxOnlineId = document.getElementById('maxOnlineActivityId').value || 0;
             const maxLocalId = document.getElementById('maxLocalActivityId').value;
-            if ( maxOnlineId == 0 ){
+            if (maxOnlineId == 0) {
                 alert("Click button:\n Get max online Id")
                 return null;
             }
-            if ( maxOnlineId <= maxLocalId ) {
+            if (maxOnlineId <= maxLocalId) {
                 alert("All activities are downloaded")
                 return null;
             }
-            async function downloadNewActivitues() {
+
             params.foo = "downloadActivity";
-            params.downloadDir = document.getElementById("downloadDir").value 
-            activitiesList.forEach(a => {
-                const id = a.activityId;
-                if (id > maxLocalId) {
-                    const time = new Date(a.startTimeLocal).toISOString();
-                    params.fileName = time.replace(/:/g, "_").replace(".000Z","+00_00") + "_" + id + ".fit";
-                    params.id = id;
-                    makeXMLHttpRequest(params);
-                }                
-            }); 
-            }
-            downloadNewActivitues().then( r=> {
+            params.downloadDir = document.getElementById("downloadDir").value
+            async function downloadNewActivitues() {
+            for (const a of activitiesList) {
+                await getActivity(a, maxLocalId).then( r=> {})
+            }}
+            downloadNewActivitues().then( r => {
                 params.foo = "maxLocalActivityId";
                 params.maxLocalActivityId = maxOnlineId;
                 makeXMLHttpRequest(params);
-                //return "OK"
-            }).catch( r=> {
-                //return "Something wrong"
+                document.getElementById('maxLocalActivityId').value = maxOnlineId;
             })
-            //addParagraph(t);
         } else {
             pending();
         }
@@ -123,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
             //console.log(this)
             switch (params.foo) {
                 case "maxLocalActivityId":
-                    addParagraph( this.response.text );
-                break;
+                    addParagraph(this.response.text);
+                    break;
                 case "login":
                     params.foo = "status";
                     setTimeout(makeXMLHttpRequest(params), 3000);
@@ -132,13 +135,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 case "status":
                     if (this.response.loginFlag) {
                         if ("config" in this.response) {
-                            config = this.response.config;                        
+                            config = this.response.config;
                             showGarminConnectControls();
                         } else {
-                            let errorInfo = "Error at login:\n" + this.response.error 
-                                +   "\nCheck username and password";
-                            if ( this.response.error === "No host") errorInfo += "\nRestart http-server-static"
-                            alert( errorInfo );
+                            let errorInfo = "Error at login:\n" + this.response.error +
+                                "\nCheck username and password";
+                            if (this.response.error === "No host") errorInfo += "\nRestart http-server-static"
+                            alert(errorInfo);
                             document.location.reload();
                         }
                     } else {
@@ -162,8 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 case "downloadActivity":
                     //let content = toArrayBuffer(this.response);
                     //console.log(this.response);
-                    addParagraph( "Downloaded: " 
-                        +  document.getElementById('downloadDir').value + "/" + this.response.text);
+                    addParagraph("Downloaded: " +
+                        document.getElementById('downloadDir').value + "/" + this.response.text);
                     break;
                 default:
                     break;
@@ -174,10 +177,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function addParagraph(text) {     
+    function addParagraph(text) {
         let p = document.createElement('p'); // is a node
         p.innerHTML = text;
-        document.body.appendChild(p);    
+        document.body.appendChild(p);
     }
 
     function hideUsernamePassword() {
@@ -205,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //document.getElementById('maxActivityIdΤitle').style.display = "inline";
         document.getElementById('maxLocalActivityId').value = config.maxLocalActivityId;
         document.getElementById('maxLocalActivityId').style.display = "inline";
-        document.getElementById('maxLocalActivityIdLabel').style.display = "inline";                
+        document.getElementById('maxLocalActivityIdLabel').style.display = "inline";
         document.getElementById('getLatestId').style.display = "inline";
         document.getElementById('maxOnlineActivityId').value = 0;
         document.getElementById('maxOnlineActivityId').style.display = "inline";
@@ -235,14 +238,14 @@ document.addEventListener('DOMContentLoaded', function () {
         "id": "1234567890"
     };
 
-    function makeXMLHttpRequest(params,type="json") {
+    function makeXMLHttpRequest(params, type = "json") {
         let xhr = new XMLHttpRequest();
         xhr.onload = httpRequestOnLoad;
         //xhr.onreadystatechange = httpRequestOnLoad;        
         xhr.open('GET', url + formatParams(params), true);
         if (type === "json") {
             xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-            xhr.responseType = 'json'; 
+            xhr.responseType = 'json';
         }
         if (type === "arraybuffer") {
             //console.log(type);
