@@ -14,7 +14,16 @@ If you are a GC user, with `gchandler` you can programmatically login into GC wi
 
 - Click on the green button, download everything as zip file and unzip.
 - Install [nodejs](https://nodejs.org/en/)
-- click `gchandler.bat` and then click Open
+- Install [fitplotter](https://github.com/karaul/fitplotter/)  and [fitalyser](https://github.com/karaul/fitalyser/), so the whole set must be as
+-The working installation is:
+ ```
+/GChandler
+/fitalyser
+/fitplotter
+```
+- click `gchandler.bat` -  the start page will be opened
+- login to Garmin Connect with your credentials
+- play with buttons
 - to be continued
 
 ### Installation for programmers who found it in github
@@ -29,7 +38,7 @@ Read [CHANGELOG.md](https://github.com/karaul/gchandler/blob/master/CHANGELOG.md
 
 ## How it works
 
-`gchandler` needs a static http-server
+`gchandler` needs a static http-server (to be continued)
 
 ## Acknowledgments
 
