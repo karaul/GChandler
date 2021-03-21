@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const time = new Date(a.startTimeLocal).toISOString();
                     params.fileName = time.replace(/:/g, "_").replace(".000Z", "+00_00") + "_" + id + ".fit";
                     params.id = id;
-                    makeXMLHttpRequest(params,"json",false);
+                    makeXMLHttpRequest(params); //,"json",false);
                     return "downloaded";
                 }
                 return "existed";
